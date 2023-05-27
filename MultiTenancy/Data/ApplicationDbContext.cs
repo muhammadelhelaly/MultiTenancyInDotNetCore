@@ -10,7 +10,7 @@ public class ApplicationDbContext : DbContext
     public ApplicationDbContext(DbContextOptions options, ITenantService tenantService) : base(options)
     {
         _tenantService = tenantService;
-        TenantId = _tenantService.GetCurrentTenant()!.TId;
+        TenantId = _tenantService.GetCurrentTenant()?.TId;
     }
 
     public DbSet<Product> Products { get; set; }
@@ -19,6 +19,21 @@ public class ApplicationDbContext : DbContext
     {
         modelBuilder.Entity<Product>().HasQueryFilter(e => e.TenantId == TenantId);
         base.OnModelCreating(modelBuilder);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        var tenantConnectionString = _tenantService.GetConnectionString();
+
+        if(!string.IsNullOrEmpty(tenantConnectionString))
+        {
+            var dbProvider = _tenantService.GetDatabaseProvider();
+
+            if(dbProvider?.ToLower() == "mssql")
+            {
+                optionsBuilder.UseSqlServer(tenantConnectionString);
+            }
+        }
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
