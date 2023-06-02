@@ -5,7 +5,7 @@ tenant: linkedIn
 
 ###
 
-GET {{host}}/api/products/3
+GET {{host}}/api/products/2
 tenant: twitter
 
 ###

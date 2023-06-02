@@ -21,21 +21,6 @@ public class ApplicationDbContext : DbContext
         base.OnModelCreating(modelBuilder);
     }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        var tenantConnectionString = _tenantService.GetConnectionString();
-
-        if(!string.IsNullOrEmpty(tenantConnectionString))
-        {
-            var dbProvider = _tenantService.GetDatabaseProvider();
-
-            if(dbProvider?.ToLower() == "mssql")
-            {
-                optionsBuilder.UseSqlServer(tenantConnectionString);
-            }
-        }
-    }
-
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
     {
         foreach (var entry in ChangeTracker.Entries<IMustHaveTenant>().Where(e => e.State == EntityState.Added))
