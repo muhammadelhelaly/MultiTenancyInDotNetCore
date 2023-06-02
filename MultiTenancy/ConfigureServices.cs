@@ -15,11 +15,10 @@ public static class ConfigureServices
         configuration.GetSection(nameof(TenantSettings)).Bind(options);
 
         var defaultDbProvider = options.Defaults.DBProvider;
-        var defaultConnectionString = options.Defaults.ConnectionString;
 
         if (defaultDbProvider.ToLower() == "mssql")
         {
-            services.AddDbContext<ApplicationDbContext>(m => m.UseSqlServer(defaultConnectionString));
+            services.AddDbContext<ApplicationDbContext>(m => m.UseSqlServer());
         }
 
         foreach (var tenant in options.Tenants)
